@@ -1,20 +1,20 @@
-package Logic.Objects;
+package Logic.Linear.Objects;
 
 import Logic.Interfaces.IFileAndFolder;
+import Logic.Interfaces.IFolder;
 
 import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Folder extends FileFolderSharedMethods implements IFileAndFolder {
+public class Folder extends FileFolderSharedMethods implements IFolder {
     private final String shortName;
     private final Map<String, IFileAndFolder> files = new HashMap<>();
-    private final Folder parent;
+    private final IFolder parent;
     private final String path;
     private final String fullName;
 
-    public Folder(String shortName, Folder parent) {
+    public Folder(String shortName, IFolder parent) {
         this.shortName = shortName;
         this.fullName = shortName;
         this.parent = parent;
@@ -34,12 +34,13 @@ public class Folder extends FileFolderSharedMethods implements IFileAndFolder {
         return shortName;
     }
 
+    @Override
     public Map<String, IFileAndFolder> getFiles() {
         return files;
     }
 
     @Override
-    public Folder getParent() {
+    public IFolder getParent() {
         return parent;
     }
 
@@ -76,10 +77,6 @@ public class Folder extends FileFolderSharedMethods implements IFileAndFolder {
     }
 
     @Override
-    public String getFileType() {
-        return ","; //using illegal char in names in order to specify it's a folder
-    }
-
     public void addFile(IFileAndFolder file) {
         files.put(file.getFullName(), file);
     }

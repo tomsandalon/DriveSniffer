@@ -1,10 +1,12 @@
-package Logic.ScanStrategy;
+package Logic.Linear;
 
 import Logic.Interfaces.IFileAndFolder;
 import Logic.Interfaces.IScanner;
-import Logic.Objects.Folder;
+import Logic.Linear.Objects.Folder;
+import Logic.Interfaces.IFolder;
+import Logic.Interfaces.IFile;
 import Logic.enums.Type;
-import Logic.Objects.File;
+import Logic.Linear.Objects.File;
 import java.nio.file.FileSystems;
 
 public class LinearScanner implements IScanner {
@@ -38,7 +40,7 @@ public class LinearScanner implements IScanner {
         return path.substring(path.lastIndexOf(separator) + 1);
     }
 
-    private File scanFile(String path, Folder parent) {
+    private IFile scanFile(String path, IFolder parent) {
         try {
             java.io.File file = new java.io.File(path);
             String fullName = shortenName(path);
@@ -56,7 +58,7 @@ public class LinearScanner implements IScanner {
         }
     }
 
-    private void fill(Folder parent, String[] fileNames) {
+    private void fill(IFolder parent, String[] fileNames) {
         for (String name : fileNames) {
             if (name.equals("")) continue;
             String workName = parent.getPath().concat(separator.concat(name));
@@ -65,12 +67,12 @@ public class LinearScanner implements IScanner {
         }
     }
 
-    private Folder scanFolder(String path, Folder parent) {
+    private IFolder scanFolder(String path, IFolder parent) {
         try {
             String parentPath = (parent != null) ? parent.getPath().concat(separator) : "";
             java.io.File dir = new java.io.File(path);
             String[] files = dir.list();
-            Folder ret = (parent == null) ? new Folder(shortenName(path), path) : new Folder(shortenName(path), parent);
+            IFolder ret = (parent == null) ? new Folder(shortenName(path), path) : new Folder(shortenName(path), parent);
             if (files == null) return null;
             fill(ret, files);
             return ret;
@@ -81,7 +83,7 @@ public class LinearScanner implements IScanner {
     }
 
     @Override
-    public IFileAndFolder scan(String path) {
+    public IFolder scan(String path) {
         Type type;
         try {
             type = checkType(path);
@@ -89,7 +91,7 @@ public class LinearScanner implements IScanner {
         catch (Exception e) {
             return null;
         }
-        return (type == Type.File) ? scanFile(path, null) : scanFolder(path, null);
+        return scanFolder(path, null);
     }
 
     @Override

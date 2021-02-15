@@ -1,7 +1,7 @@
 package Logic.Interfaces;
 
 public interface IController {
-    IFileAndFolder scan();
+    IFolder scan();
 
     boolean delete(String path);
 }

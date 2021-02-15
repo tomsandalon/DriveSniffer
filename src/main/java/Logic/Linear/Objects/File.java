@@ -1,18 +1,19 @@
-package Logic.Objects;
-import Logic.Interfaces.IFileAndFolder;
+package Logic.Linear.Objects;
+import Logic.Interfaces.IFile;
+import Logic.Interfaces.IFolder;
 
 import java.nio.file.FileSystems;
 
 
-public class File extends FileFolderSharedMethods implements IFileAndFolder {
+public class File extends FileFolderSharedMethods implements IFile {
     private final String shortName;
     private final String fileType;
     private final long size;
-    private final Folder parent;
+    private final IFolder parent;
     private final String path;
     private final String fullName;
 
-    public File(String shortName, String fileType, long size, Folder parent) {
+    public File(String shortName, String fileType, long size, IFolder parent) {
         this.shortName = shortName;
         this.fileType = fileType;
         this.size = size;
@@ -28,11 +29,6 @@ public class File extends FileFolderSharedMethods implements IFileAndFolder {
     }
 
     @Override
-    public String getFileType() {
-        return fileType;
-    }
-
-    @Override
     public String getFullName() {
         return fullName;
     }
@@ -43,7 +39,7 @@ public class File extends FileFolderSharedMethods implements IFileAndFolder {
     }
 
     @Override
-    public Folder getParent() {
+    public IFolder getParent() {
         return parent;
     }
 
@@ -56,6 +52,7 @@ public class File extends FileFolderSharedMethods implements IFileAndFolder {
         return fullName;
     }
 
+    @Override
     public String delete() {
         return deleteSelf(parent, path, getShortName());
     }

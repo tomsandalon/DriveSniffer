@@ -1,19 +1,18 @@
-package Logic;
+package Logic.Linear;
 
 import Logic.Interfaces.IController;
 import Logic.Interfaces.IFileAndFolder;
 import Logic.Interfaces.IScanner;
-import Logic.Objects.Folder;
-import Logic.enums.Type;
+import Logic.Interfaces.IFolder;
 
 import java.nio.file.FileSystems;
 
 public class Controller implements IController {
 
-    private String initialPath;
+    private final String initialPath;
     private final String separator = FileSystems.getDefault().getSeparator();
-    private IFileAndFolder data;
-    private IScanner scanner;
+    private final IFolder data;
+    private final IScanner scanner;
 
     public Controller(IScanner scanner) {
         this.scanner = scanner;
@@ -22,7 +21,7 @@ public class Controller implements IController {
     }
 
     @Override
-    public IFileAndFolder scan() {
+    public IFolder scan() {
         if (data != null) return data;
         return scanner.scan(initialPath);
     }
@@ -36,7 +35,7 @@ public class Controller implements IController {
         for (String name : relativePathArr) {
             try {
                 if (name.equals("")) continue;
-                if  (((Folder)cur).getFiles().containsKey(name)) cur = (((Folder)cur).getFiles().get(name));
+                if  (((IFolder)cur).getFiles().containsKey(name)) cur = (((IFolder)cur).getFiles().get(name));
                 else throw new Exception ("Illegal path");
             }
             catch (Exception e) {

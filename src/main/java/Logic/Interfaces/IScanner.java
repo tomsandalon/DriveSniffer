@@ -3,7 +3,7 @@ package Logic.Interfaces;
 import Logic.Interfaces.IFileAndFolder;
 
 public interface IScanner {
-    IFileAndFolder scan(String path);
+    IFolder scan(String path);
 
     String getPath();
 }
