@@ -87,12 +87,15 @@ public class ConcurrentController implements IController {
     public Result navigateTo(String path) {
         if (!result.isFinalSize()) return new Result("Scan not completed yet");
         if (result.getPath().equals(path.substring(0, result.getPath().length()))) return new Result("Invalid path");
-        ConcurrentFolder cur = current;
+        ConcurrentFolder cur = result;
         String relativePath = path.substring(result.getPath().length());
         String[] relativePathArr = relativePath.split(File.separator);
         for (String dir : relativePathArr) {
             try {
                 cur = (ConcurrentFolder) cur.getFiles().get(dir);
+            }
+            catch (ClassCastException e) {
+                return new Result("File");
             }
             catch (Exception e) {
                 return new Result("Invalid path");
