@@ -8,10 +8,10 @@ public interface IRootFolder {
 
     long getSize();
 
-    long updateSize();
 
     String getName();
 
     List<IPresentationFileFolder> getSubElements();
 
+    boolean isFinal();
 }

@@ -1,22 +1,29 @@
 package Presentation;
 
-import Presentation.Components.PieChart;
+import Logic.Concurrent.ConcurrentController;
+import Logic.Interfaces.IController;
 import Presentation.Listeners.AnalyzeListener;
 import Presentation.Listeners.SelectFolderListener;
+import Presentation.PresentationIObjects.IPresentationFileFolder;
+import Presentation.PresentationIObjects.IRootFolder;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.util.List;
 
 public class HomeWindow extends JFrame {
-    private JFileChooser fileChooser;
+    private static final int WINDOW_WIDTH = 1000;
+    private static final int WINDOW_HEIGH = 800;
+    private final JFileChooser fileChooser;
     private File selectedFolder;
-    private PieChart chart;
     private JComponent description; //TODO find bettere solution to hide description
     private JComponent analyzeBtn;
+    private IController dirController;
+
     public HomeWindow() {
         setTitle("Drive Sniffer");
-        setSize(1000, 800);
+        setSize(WINDOW_WIDTH, WINDOW_HEIGH);
 
         this.fileChooser = new JFileChooser();
         fileChooser.setCurrentDirectory(new java.io.File(".")); // start at application current directory
@@ -70,19 +77,23 @@ public class HomeWindow extends JFrame {
     }
 
     public void onStartAnalyzing(){
+        this.dirController = new ConcurrentController(this.selectedFolder.getAbsolutePath());
+        //Logic.start
+        Result result = this.dirController.scan();
 
-
-        //TODO Logic.start??
-        // Note Pie chart.createSampleDataSet comes at first time to sample the Logic
+        if(!result.isSuccess()){
+            //TODO Show Message
+            return;
+        }
         JPanel panelChart = new JPanel();
-        this.chart = new PieChart(panelChart);
-//        panelChart.add(chart);
+        PieChart chart = new PieChart(panelChart);
         this.getContentPane().add(panelChart);
         this.description.setVisible(false);
 //        this.analyzeBtn.setVisible(false);
         setVisible(true);
-//        Thread chartReporter = new Thread(new ChartReporter(this.chart));
-//        chartReporter.start();
+        Runnable chartReport = new ChartReporter(chart, result.getResult(), this.dirController, this.selectedFolder.getAbsolutePath());
+        Thread chartReporter = new Thread(chartReport);
+        chartReporter.start();
     }
 
     private void setLocationToCenter(Frame frame) {
@@ -96,20 +107,5 @@ public class HomeWindow extends JFrame {
         // center by y
         int y = (bounds.height + insets.top - frame.getHeight())/2;
         frame.setLocation(x, y);
-    }
-}
-
-class ChartReporter implements Runnable{
-    private PieChart chart;
-
-    public ChartReporter(PieChart chart) {
-        this.chart = chart;
-    }
-
-    @Override
-    public void run() {
-        //TODO while
-        //  Logic.sample
-        //  chart.update(data)
     }
 }
