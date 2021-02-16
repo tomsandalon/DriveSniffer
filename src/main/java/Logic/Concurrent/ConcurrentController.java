@@ -121,6 +121,11 @@ public class ConcurrentController implements IController {
     }
 
     @Override
+    public boolean isFinal() { //TODO
+        return false;
+    }
+
+    @Override
     public boolean delete(String path) { //TODO
         return false;
     }

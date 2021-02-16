@@ -1,24 +1,25 @@
-package Logic.Concurrent.Objects;
+package Logic.TwoThread.Objects;
 
 import Logic.Interfaces.IFileAndFolder;
 import Logic.Interfaces.IFolder;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class ConcurrentFolder implements IFolder {
+public class TwoThreadFolder implements IFolder {
 
-    private ConcurrentFolder parent;
+    private TwoThreadFolder parent;
     private String path;
     private AtomicLong size;
     private Map<String, IFileAndFolder> files;
     private String shortName;
 
-    public ConcurrentFolder(String path, ConcurrentFolder parent, String shortName) {
+    public TwoThreadFolder(String path, TwoThreadFolder parent, String shortName) {
         this.path = path;
         this.size = new AtomicLong(0);
-        this.files = new ConcurrentHashMap<>();
+        this.files = new HashMap<>();
         this.parent = parent;
         this.shortName = shortName;
     }
@@ -58,7 +59,6 @@ public class ConcurrentFolder implements IFolder {
         return size.get();
     }
 
-    @Override
     public void addToSize(long size) {
         this.size.addAndGet(size);
         if (parent != null) this.parent.addToSize(size);

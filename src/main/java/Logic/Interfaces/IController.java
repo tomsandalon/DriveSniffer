@@ -9,5 +9,7 @@ public interface IController {
 
     Result update();
 
+    boolean isFinal();
+
     boolean delete(String path);
 }

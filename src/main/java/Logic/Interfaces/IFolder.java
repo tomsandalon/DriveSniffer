@@ -23,5 +23,7 @@ public interface IFolder extends IFileAndFolder {
     @Override
     long getSize();
 
+    void addToSize(long toAdd);
+
     void addFile(IFileAndFolder file);
 }
