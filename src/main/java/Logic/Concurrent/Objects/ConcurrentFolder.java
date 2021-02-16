@@ -65,6 +65,6 @@ public class ConcurrentFolder implements IFolder {
 
     @Override
     public void addFile(IFileAndFolder file) {
-        files.put(file.getFullName(), file);
+        files.put(file.getPath(), file);
     }
 }
