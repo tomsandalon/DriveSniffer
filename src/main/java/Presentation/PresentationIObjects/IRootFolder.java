@@ -14,7 +14,5 @@ public interface IRootFolder {
 
     List<IPresentationFileFolder> getSubElements();
 
-    boolean isFinal();
-
     void setAsFinal();
 }

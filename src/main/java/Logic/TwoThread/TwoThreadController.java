@@ -47,7 +47,7 @@ public class TwoThreadController implements IController {
                     }
                     else {
                         toAdd = new TwoThreadFolder(file.getAbsolutePath(), (TwoThreadFolder) current, file.getName());
-                        remaining.add(toAdd);
+                        remaining.add((IFolder) toAdd);
                     }
                     current.addFile(toAdd);
                 }
@@ -71,12 +71,12 @@ public class TwoThreadController implements IController {
     @Override
     public Result navigateTo(String path) {
         if (result.getPath().equals(path.substring(0, result.getPath().length()))) return new Result("Invalid path");
-        ConcurrentFolder cur = result;
+        TwoThreadFolder cur = result;
         String relativePath = path.substring(result.getPath().length());
         String[] relativePathArr = relativePath.split(File.separator);
         for (String dir : relativePathArr) {
             try {
-                cur = (ConcurrentFolder) cur.getFiles().get(dir);
+                cur = (TwoThreadFolder) cur.getFiles().get(dir);
             }
             catch (ClassCastException e) {
                 return new Result("File");
@@ -85,7 +85,7 @@ public class TwoThreadController implements IController {
                 return new Result("Invalid path");
             }
         }
-        current = new TwoThreadFolder(cur.getPath(), (ConcurrentFolder) cur.getParent(), cur.getShortName());
+        current = new TwoThreadFolder(cur.getPath(), (TwoThreadFolder) cur.getParent(), cur.getShortName());
         current.addToSize(cur.getSize());
         for (IFileAndFolder file : cur.getFiles().values()) {
             current.addFile(file);
@@ -104,10 +104,12 @@ public class TwoThreadController implements IController {
     }
 
     @Override
+    public boolean isFinal() {
+        return isFinal;
+    }
+
+    @Override
     public boolean delete(String path) { //TODO
         return false;
     }
-}
-
-
 }

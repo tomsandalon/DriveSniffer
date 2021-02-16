@@ -3,6 +3,7 @@ package Presentation.PresentationIObjects;
 import Logic.Concurrent.Objects.ConcurrentRootFolder;
 import Logic.Interfaces.IFile;
 import Logic.Interfaces.IFileAndFolder;
+import Logic.Interfaces.IFolder;
 import Presentation.Result;
 
 import java.util.ArrayList;
@@ -23,11 +24,10 @@ public class RootFolder implements IRootFolder {
         this.elements = new ArrayList<>();
     }
 
-    public RootFolder(ConcurrentRootFolder result) {
+    public RootFolder(IFolder result) {
         this.path = result.getPath();
         this.size = result.getSize();
         this.name = result.getFullName();
-        this.isFinal = result.isFinalSize();
         this.elements = new ArrayList<>();
         for (IFileAndFolder file : result.getFiles().values()) {
             this.elements.add(new PresentationFileFolder(file));
@@ -57,11 +57,6 @@ public class RootFolder implements IRootFolder {
     @Override
     public List<IPresentationFileFolder> getSubElements() {
         return null;
-    }
-
-    @Override
-    public boolean isFinal() {
-        return isFinal;
     }
 
     @Override
