@@ -68,15 +68,21 @@ public class TwoThreadController implements IController {
         }
     }
 
+    private String[] split(String s) {
+        String separator = (File.separator.equals("\\")) ? "\\\\" : File.separator;
+        String temp = s.replaceAll(separator, ",");
+        return temp.split(",");
+    }
+
     @Override
     public Result navigateTo(String path) {
-        if (result.getPath().equals(path.substring(0, result.getPath().length()))) return new Result("Invalid path");
+        if (!result.getPath().equals(path.substring(0, result.getPath().length()))) return new Result("Invalid path");
         TwoThreadFolder cur = result;
-        String relativePath = path.substring(result.getPath().length());
-        String[] relativePathArr = relativePath.split(File.separator);
+        String relativePath = path.substring(result.getPath().length() + 1);
+        String[] relativePathArr = split(relativePath);
         for (String dir : relativePathArr) {
             try {
-                cur = (TwoThreadFolder) cur.getFiles().get(dir);
+                cur = (TwoThreadFolder) cur.getFiles().get(cur.getPath().concat(File.separator).concat(dir));
             }
             catch (ClassCastException e) {
                 return new Result("File");

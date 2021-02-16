@@ -22,9 +22,16 @@ class ChartReporter implements Runnable {
         this.chart.initChart();
     }
 
+    public static Runnable createChartReporter(PieChart chart, IRootFolder result, IController dirController, String selectedPath) {
+        ChartReporter temp =  new ChartReporter(chart, result, dirController, selectedPath);
+        chart.setReporter(temp);
+        return temp;
+    }
+
     public void onSelectedSection(String name){
         Result resultDir = this.controller.navigateTo(this.currentPath.navigate(name));
         if(resultDir.isSuccess()){
+            System.out.println("Success");
             this.chart.makeChart(resultDir.getResult());
         } else {
             //TODO present message scan is not complited yet
@@ -33,7 +40,6 @@ class ChartReporter implements Runnable {
 
     @Override
     public void run() {
-        IRootFolder rootFolder;
         try {
             do {
                 Thread.sleep(UPDATE_INTERVAL);
@@ -43,9 +49,9 @@ class ChartReporter implements Runnable {
                     System.out.print("I am dead");
                     return;
                 }
-                rootFolder = result.getResult();
+                IRootFolder rootFolder = result.getResult();
                 this.chart.updateChart(rootFolder);
-            } while (!rootFolder.isFinal());
+            } while (!this.controller.isFinal());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

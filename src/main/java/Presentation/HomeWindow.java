@@ -2,6 +2,7 @@ package Presentation;
 
 import Logic.Concurrent.ConcurrentController;
 import Logic.Interfaces.IController;
+import Logic.TwoThread.TwoThreadController;
 import Presentation.Listeners.AnalyzeListener;
 import Presentation.Listeners.SelectFolderListener;
 import Presentation.PresentationIObjects.IPresentationFileFolder;
@@ -13,6 +14,7 @@ import java.io.File;
 import java.util.List;
 
 public class HomeWindow extends JFrame {
+    public static String selectedPath = "D:\\OLD\\MARIK";
     private static final int WINDOW_WIDTH = 1000;
     private static final int WINDOW_HEIGH = 800;
     private final JFileChooser fileChooser;
@@ -77,7 +79,9 @@ public class HomeWindow extends JFrame {
     }
 
     public void onStartAnalyzing(){
-        this.dirController = new ConcurrentController(this.selectedFolder.getAbsolutePath());
+        String selectedPath = this.selectedFolder.getAbsolutePath();
+//        String selectedPath = HomeWindow.selectedPath;
+        this.dirController = new TwoThreadController(selectedPath);
         //Logic.start
         Result result = this.dirController.scan();
 
@@ -90,10 +94,10 @@ public class HomeWindow extends JFrame {
         this.getContentPane().add(panelChart);
         this.description.setVisible(false);
 //        this.analyzeBtn.setVisible(false);
-        setVisible(true);
-        Runnable chartReport = new ChartReporter(chart, result.getResult(), this.dirController, this.selectedFolder.getAbsolutePath());
+        Runnable chartReport = ChartReporter.createChartReporter(chart, result.getResult(), this.dirController, selectedPath);
         Thread chartReporter = new Thread(chartReport);
         chartReporter.start();
+        setVisible(true);
     }
 
     private void setLocationToCenter(Frame frame) {

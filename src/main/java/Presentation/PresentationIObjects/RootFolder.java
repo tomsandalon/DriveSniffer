@@ -56,7 +56,7 @@ public class RootFolder implements IRootFolder {
 
     @Override
     public List<IPresentationFileFolder> getSubElements() {
-        return null;
+        return this.elements;
     }
 
     @Override

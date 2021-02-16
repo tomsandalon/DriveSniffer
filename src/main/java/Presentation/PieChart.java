@@ -24,8 +24,8 @@ public class PieChart {
     private JComponent parent;
     private ChartReporter reporter;
     public PieChart(JComponent parent) {
-        this.width = 500;
-        this.height = 270;
+        this.width = 700;
+        this.height = 500;
         this.parent = parent;
         this.result = new DefaultPieDataset();
     }
@@ -44,18 +44,8 @@ public class PieChart {
     }
 
     public void makeChart(IRootFolder rootFolder){
+        result.clear();
         updateChart(rootFolder);
-        List<IPresentationFileFolder> subElements = rootFolder.getSubElements();
-        List keys = result.getKeys();
-        for (Object key: keys) {
-            Comparable tempKey = (Comparable) key;
-            for (IPresentationFileFolder sumElement :
-                    subElements) {
-                if(!sumElement.getName().equals(tempKey)){
-                    result.remove(tempKey);
-                }
-            }
-        }
     }
 
     public void updateChart(IRootFolder rootFolder){
@@ -111,7 +101,6 @@ class CustomLabelGenerator implements PieSectionLabelGenerator {
         String result = null;
         if (dataset != null) {
             result = key.toString();
-            System.out.println(result);
         }
         return result;
     }
