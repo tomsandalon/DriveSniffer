@@ -26,7 +26,6 @@ public class PieChart {
         final ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
         this.parent.add(chartPanel);
-//        setContentPane(chartPanel);
         chartPanel.addChartMouseListener(new ClickSectionListener(this));
     }
 
@@ -35,7 +34,7 @@ public class PieChart {
     }
 
     private PieDataset createSampleDataset() {
-        //TODO Logic.Sample
+        //TODO Logic.Samples
         result.setValue("A", 20);
         result.setValue("B", 20);
         result.setValue("C", 20);

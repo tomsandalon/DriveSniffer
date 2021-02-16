@@ -70,6 +70,8 @@ public class HomeWindow extends JFrame {
     }
 
     public void onStartAnalyzing(){
+
+
         //TODO Logic.start??
         // Note Pie chart.createSampleDataSet comes at first time to sample the Logic
         JPanel panelChart = new JPanel();
