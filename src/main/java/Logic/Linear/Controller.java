@@ -4,6 +4,7 @@ import Logic.Interfaces.IController;
 import Logic.Interfaces.IFileAndFolder;
 import Logic.Interfaces.IScanner;
 import Logic.Interfaces.IFolder;
+import Presentation.Result;
 
 import java.nio.file.FileSystems;
 
@@ -17,13 +18,19 @@ public class Controller implements IController {
     public Controller(IScanner scanner) {
         this.scanner = scanner;
         this.initialPath = scanner.getPath();
-        this.data = scan();
+        this.data = (IFolder) scan(); //TODO
     }
 
     @Override
-    public IFolder scan() {
-        if (data != null) return data;
-        return scanner.scan(initialPath);
+    public Result scan() { //TODO
+//        if (data != null) return data;
+//        return scanner.scan(initialPath);
+        return null;
+    }
+
+    @Override
+    public Result navigateTo(String path) { //TODO
+        return null;
     }
 
     private IFileAndFolder getFromFolderAndFile(String path) {

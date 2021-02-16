@@ -7,6 +7,7 @@ import Logic.Interfaces.IController;
 import Logic.Interfaces.IFile;
 import Logic.Interfaces.IFileAndFolder;
 import Logic.Interfaces.IFolder;
+import Presentation.Result;
 
 import java.io.File;
 import java.util.Formattable;
@@ -77,10 +78,16 @@ public class ConcurrentController implements IController {
     }
 
     @Override
-    public ConcurrentRootFolder scan() {
-        Thread thread = new Thread(this::poolExecution);
-        thread.start();
-        return result;
+    public Result scan() {//TODO
+//        Thread thread = new Thread(this::poolExecution);
+//        thread.start();
+//        return result;
+        return null;
+    }
+
+    @Override
+    public Result navigateTo(String path) {
+        return null;
     }
 
     @Override
