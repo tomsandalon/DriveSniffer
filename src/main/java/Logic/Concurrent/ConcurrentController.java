@@ -4,36 +4,30 @@ import Logic.Concurrent.Objects.ConcurrentFile;
 import Logic.Concurrent.Objects.ConcurrentFolder;
 import Logic.Concurrent.Objects.ConcurrentRootFolder;
 import Logic.Interfaces.IController;
-import Logic.Interfaces.IFile;
 import Logic.Interfaces.IFileAndFolder;
 import Logic.Interfaces.IFolder;
+import Presentation.PresentationIObjects.RootFolder;
 import Presentation.Result;
 
 import java.io.File;
-import java.util.Formattable;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 public class ConcurrentController implements IController {
 
     private final int NUMBER_OF_THREADS = 10;
-    private final int NUMBER_OF_LOOPS = 4;
     private final int LOOP_LENGTH_IN_MILLIS = 100;
     private final Queue<IFolder> remaining;
     private final ConcurrentRootFolder result;
-    private final boolean isDone = false;
-    private final Thread[] threads = new Thread[NUMBER_OF_THREADS];
+    private ConcurrentRootFolder current;
     private static final Object monitor = new Object();
-
-
-
 
     public ConcurrentController(String path) {
         File folder = new File(path);
         result = new ConcurrentRootFolder(folder.getAbsolutePath(), null, folder.getName());
+        current = result;
         remaining = new ConcurrentLinkedQueue<>();
         remaining.add(result);
     }
@@ -78,16 +72,52 @@ public class ConcurrentController implements IController {
     }
 
     @Override
-    public Result scan() {//TODO
-//        Thread thread = new Thread(this::poolExecution);
-//        thread.start();
-//        return result;
-        return null;
+    public Result scan() {
+        try{
+            Thread thread = new Thread(this::poolExecution);
+            thread.start();
+            return new Result(new RootFolder(result));
+        }
+        catch (Exception e) {
+            return new Result(e.toString());
+        }
     }
 
     @Override
     public Result navigateTo(String path) {
-        return null;
+        if (!result.isFinalSize()) return new Result("Scan not completed yet");
+        if (result.getPath().equals(path.substring(0, result.getPath().length()))) return new Result("Invalid path");
+        ConcurrentFolder cur = result;
+        String relativePath = path.substring(result.getPath().length());
+        String[] relativePathArr = relativePath.split(File.separator);
+        for (String dir : relativePathArr) {
+            try {
+                cur = (ConcurrentFolder) cur.getFiles().get(dir);
+            }
+            catch (ClassCastException e) {
+                return new Result("File");
+            }
+            catch (Exception e) {
+                return new Result("Invalid path");
+            }
+        }
+        current = new ConcurrentRootFolder(cur.getPath(), (ConcurrentFolder) cur.getParent(), cur.getShortName());
+        current.addToSize(cur.getSize());
+        for (IFileAndFolder file : cur.getFiles().values()) {
+            current.addFile(file);
+        }
+        current.setIsFinalSize(result.isFinalSize());
+        return new Result(new RootFolder(current));
+    }
+
+    @Override
+    public Result update() {
+        try{
+            return new Result(new RootFolder(current));
+        }
+        catch (Exception e) {
+            return new Result(e.toString());
+        }
     }
 
     @Override
