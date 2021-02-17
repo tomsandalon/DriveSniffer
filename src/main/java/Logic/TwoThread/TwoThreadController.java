@@ -50,6 +50,7 @@ public class TwoThreadController implements IController {
                 }
             }
         }
+        result.setSizeIsFinal(true);
         isFinal = true;
     }
 

@@ -15,12 +15,16 @@ public class TwoThreadFolder implements IFolder {
     private final String path;
     private final Map<String, IFileAndFolder> files;
     private final String name;
+    private long size;
+    private boolean sizeIsFinal;
 
     public TwoThreadFolder(String path, TwoThreadFolder parent, String shortName) {
         this.path = path;
         this.files = new ConcurrentHashMap<>();
         this.parent = parent;
         this.name = shortName;
+        size = 0;
+        sizeIsFinal = false;
     }
 
     @Override
@@ -51,17 +55,30 @@ public class TwoThreadFolder implements IFolder {
         }
         File file = new File(path);
         if (!file.delete()) return false;
-        parent.getFiles().remove(path);
+        if (parent != null) {
+            parent.getFiles().remove(path);
+            parent.setSizeIsFinal(false);
+        }
         return true;
     }
 
     @Override
     public long getSize() {
+        if (sizeIsFinal) return size;
         return files.values().stream().mapToLong(IFileAndFolder::getSize).sum();
     }
 
     @Override
     public void addFile(IFileAndFolder file) {
         files.put(file.getPath(), file);
+    }
+
+    @Override
+    public void setSizeIsFinal(boolean sizeIsFinal) {
+        boolean prevState = this.sizeIsFinal;
+        this.sizeIsFinal = sizeIsFinal;
+        if (!sizeIsFinal || prevState) return;
+        for (IFileAndFolder subFolder : files.values())
+            if (subFolder instanceof IFolder) ((IFolder) subFolder).setSizeIsFinal(true);
     }
 }
