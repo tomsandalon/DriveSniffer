@@ -13,16 +13,14 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class TwoThreadFolder implements IFolder {
 
-    private TwoThreadFolder parent;
-    private String path;
-    private AtomicLong size;
-    private Map<String, IFileAndFolder> files;
-    private String shortName;
+    private final TwoThreadFolder parent;
+    private final String path;
+    private final Map<String, IFileAndFolder> files;
+    private final String shortName;
 
     public TwoThreadFolder(String path, TwoThreadFolder parent, String shortName) {
         this.path = path;
-        this.size = new AtomicLong(0);
-        this.files = new HashMap<>();
+        this.files = new ConcurrentHashMap<>();
         this.parent = parent;
         this.shortName = shortName;
     }
