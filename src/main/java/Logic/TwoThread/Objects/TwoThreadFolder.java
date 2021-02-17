@@ -28,7 +28,7 @@ public class TwoThreadFolder implements IFolder {
     }
 
     @Override
-    public String getShortName() {
+    public String getName() {
         return shortName;
     }
 
@@ -60,18 +60,8 @@ public class TwoThreadFolder implements IFolder {
     }
 
     @Override
-    public String getFullName() {
-        return shortName;
-    }
-
-    @Override
     public long getSize() {
-        return size.get();
-    }
-
-    public void addToSize(long size) {
-        this.size.addAndGet(size);
-        if (parent != null) this.parent.addToSize(size);
+        return files.values().stream().mapToLong(IFileAndFolder::getSize).sum();
     }
 
     @Override

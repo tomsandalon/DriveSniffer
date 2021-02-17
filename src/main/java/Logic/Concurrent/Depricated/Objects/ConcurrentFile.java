@@ -20,13 +20,8 @@ public class ConcurrentFile implements IFile {
     }
 
     @Override
-    public String getShortName() {
+    public String getName() {
         return name;
-    }
-
-    @Override
-    public String getFullName() {
-        return path;
     }
 
     @Override

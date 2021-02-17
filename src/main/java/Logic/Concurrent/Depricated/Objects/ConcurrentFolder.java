@@ -24,7 +24,7 @@ public class ConcurrentFolder implements IFolder {
     }
 
     @Override
-    public String getShortName() {
+    public String getName() {
         return shortName;
     }
 
@@ -49,19 +49,8 @@ public class ConcurrentFolder implements IFolder {
     }
 
     @Override
-    public String getFullName() {
-        return shortName;
-    }
-
-    @Override
     public long getSize() {
         return size.get();
-    }
-
-    @Override
-    public void addToSize(long size) {
-        this.size.addAndGet(size);
-        if (parent != null) this.parent.addToSize(size);
     }
 
     @Override
