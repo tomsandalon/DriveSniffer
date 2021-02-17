@@ -1,9 +1,9 @@
 package Presentation;
 
-import Logic.Concurrent.ConcurrentController;
 import Logic.Interfaces.IController;
 import Logic.TwoThread.TwoThreadController;
 import Presentation.Listeners.AnalyzeListener;
+import Presentation.Listeners.BackListener;
 import Presentation.Listeners.SelectFolderListener;
 import Presentation.PresentationIObjects.IPresentationFileFolder;
 import Presentation.PresentationIObjects.IRootFolder;
@@ -21,6 +21,7 @@ public class HomeWindow extends JFrame {
     private JComponent analyzeBtn;
     private PieChart chart;
     private JPanel panelChart;
+    private ChartReporter chartReport;
 
     public HomeWindow() {
         setTitle("Drive Sniffer");
@@ -56,7 +57,7 @@ public class HomeWindow extends JFrame {
         JButton button = new JButton("Back");
         this.analyzeBtn = button;
         JPanel panelBtn = new JPanel();
-        button.addActionListener(new AnalyzeListener(this));
+        button.addActionListener(new BackListener(this));
         panelBtn.add(button);
         container.add(panelBtn);
     }
@@ -76,6 +77,7 @@ public class HomeWindow extends JFrame {
         button.addActionListener(new AnalyzeListener(this));
         panelBtn.add(button);
         container.add(panelBtn, position);
+        button.setVisible(false);
     }
 
     private void configureChart(Container container, int width, int height) {
@@ -108,7 +110,8 @@ public class HomeWindow extends JFrame {
     }
 
     public void onBack(){
-
+        if(chartReport == null) return;
+        chartReport.onBack();
     }
 
     public void onStartAnalyzing(){
@@ -124,7 +127,7 @@ public class HomeWindow extends JFrame {
         this.description.setVisible(false);
         this.panelChart.setVisible(true);
         this.analyzeBtn.setVisible(false);
-        Runnable chartReport = ChartReporter.createChartReporter(this.chart, result.getResult(), dirController, selectedPath, this);
+        this.chartReport = ChartReporter.createChartReporter(this.chart, result.getResult(), dirController, selectedPath, this);
         Thread chartReporter = new Thread(chartReport);
         chartReporter.start();
         setVisible(true);

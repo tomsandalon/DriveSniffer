@@ -79,9 +79,10 @@ public class TwoThreadController implements IController {
 
     private IFileAndFolder getFromPath(String path) throws Exception {
         IFileAndFolder cur = result;
-        String relativePath = path.substring(result.getPath().length() + 1);
+        String relativePath = path.substring(result.getPath().length());
         String[] relativePathArr = split(relativePath);
         for (String dir : relativePathArr) {
+            if (dir.equals("")) continue;
             cur = ((TwoThreadFolder) cur).getFiles().get(cur.getPath().concat(File.separator).concat(dir));
         }
         return cur;
@@ -89,6 +90,7 @@ public class TwoThreadController implements IController {
 
     @Override
     public Result navigateTo(String path) {
+        if (path == null) return new Result("Can't go back from root");
         if (!isSubpath(path)) return new Result("Invalid path");
         TwoThreadFolder cur = null;
         try {

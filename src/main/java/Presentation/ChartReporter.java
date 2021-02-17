@@ -26,7 +26,7 @@ class ChartReporter implements Runnable {
         this.chart.initChart();
     }
 
-    public static Runnable createChartReporter(PieChart chart, IRootFolder result, IController dirController, String selectedPath, Frame currentWindow) {
+    public static ChartReporter createChartReporter(PieChart chart, IRootFolder result, IController dirController, String selectedPath, Frame currentWindow) {
         ChartReporter temp =  new ChartReporter(chart, result, dirController, selectedPath, currentWindow);
         chart.setReporter(temp);
         return temp;
@@ -34,6 +34,16 @@ class ChartReporter implements Runnable {
 
     public void onSelectedSection(String name){
         Result resultDir = this.controller.navigateTo(this.currentPath.navigate(name));
+        if(resultDir.isSuccess()){
+            System.out.println("Success");
+            this.chart.makeChart(resultDir.getResult());
+        } else {
+            JOptionPane.showMessageDialog(this.currentWindow, resultDir.getErrorMsg(), "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    public void onBack() {
+        Result resultDir = this.controller.navigateTo(this.currentPath.goBack());
         if(resultDir.isSuccess()){
             System.out.println("Success");
             this.chart.makeChart(resultDir.getResult());
