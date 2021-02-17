@@ -3,8 +3,11 @@ package Logic.TwoThread.Objects;
 import Logic.Interfaces.IFileAndFolder;
 import Logic.Interfaces.IFolder;
 
+import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -45,8 +48,15 @@ public class TwoThreadFolder implements IFolder {
     }
 
     @Override
-    public String delete() { //TODO
-        return null;
+    public boolean delete() {
+        Set<IFileAndFolder> filesClone = new HashSet<>(files.values());
+        for (IFileAndFolder file : filesClone){
+            if (!file.delete()) return false;
+        }
+        File file = new File(path);
+        if (!file.delete()) return false;
+        parent.getFiles().remove(path);
+        return true;
     }
 
     @Override

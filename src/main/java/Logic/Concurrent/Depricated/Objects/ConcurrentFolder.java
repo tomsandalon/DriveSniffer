@@ -1,4 +1,4 @@
-package Logic.Concurrent.Objects;
+package Logic.Concurrent.Depricated.Objects;
 
 import Logic.Interfaces.IFileAndFolder;
 import Logic.Interfaces.IFolder;
@@ -44,8 +44,8 @@ public class ConcurrentFolder implements IFolder {
     }
 
     @Override
-    public String delete() { //TODO
-        return null;
+    public boolean delete() { //TODO
+        return false;
     }
 
     @Override

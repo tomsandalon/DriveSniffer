@@ -45,11 +45,11 @@ public class TwoThreadFile implements IFile {
     }
 
     @Override
-    public String delete() {
+    public boolean delete() {
         File file = new File(path);
-        if (!file.delete()) return path;
+        if (!file.delete()) return false;
         parent.getFiles().remove(path);
-        return "";
+        return true;
     }
 
 }

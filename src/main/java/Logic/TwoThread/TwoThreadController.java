@@ -1,12 +1,11 @@
 package Logic.TwoThread;
 
-import Logic.Concurrent.Objects.ConcurrentFolder;
 import Logic.Interfaces.IController;
-import Logic.Interfaces.IFile;
 import Logic.Interfaces.IFileAndFolder;
 import Logic.Interfaces.IFolder;
 import Logic.TwoThread.Objects.TwoThreadFile;
 import Logic.TwoThread.Objects.TwoThreadFolder;
+import Presentation.PresentationIObjects.IRootFolder;
 import Presentation.PresentationIObjects.RootFolder;
 import Presentation.Result;
 
@@ -60,8 +59,9 @@ public class TwoThreadController implements IController {
     public Result scan() {
         try{
             Thread thread = new Thread(this::scanMission);
+            Result ret = new Result(new RootFolder(result));
             thread.start();
-            return new Result(new RootFolder(result));
+            return ret;
         }
         catch (Exception e) {
             return new Result(e.toString());
@@ -74,22 +74,30 @@ public class TwoThreadController implements IController {
         return temp.split(",");
     }
 
-    @Override
-    public Result navigateTo(String path) {
-        if (!result.getPath().equals(path.substring(0, result.getPath().length()))) return new Result("Invalid path");
-        TwoThreadFolder cur = result;
+    private boolean isSubpath(String path) {
+        return result.getPath().equals(path.substring(0, result.getPath().length()));
+    }
+
+    private IFileAndFolder getFromPath(String path) throws Exception {
+        IFileAndFolder cur = result;
         String relativePath = path.substring(result.getPath().length() + 1);
         String[] relativePathArr = split(relativePath);
         for (String dir : relativePathArr) {
-            try {
-                cur = (TwoThreadFolder) cur.getFiles().get(cur.getPath().concat(File.separator).concat(dir));
-            }
-            catch (ClassCastException e) {
-                return new Result("File");
-            }
-            catch (Exception e) {
-                return new Result("Invalid path");
-            }
+            cur = ((TwoThreadFolder) cur).getFiles().get(cur.getPath().concat(File.separator).concat(dir));
+        }
+        return cur;
+    }
+
+    @Override
+    public Result navigateTo(String path) {
+        if (!isSubpath(path)) return new Result("Invalid path");
+        TwoThreadFolder cur = null;
+        try {
+            cur = (TwoThreadFolder) getFromPath(path);
+        } catch (ClassCastException e) {
+            return new Result("File error");
+        } catch (Exception e) {
+            return new Result(e.toString());
         }
         current = new TwoThreadFolder(cur.getPath(), (TwoThreadFolder) cur.getParent(), cur.getShortName());
         current.addToSize(cur.getSize());
@@ -115,7 +123,16 @@ public class TwoThreadController implements IController {
     }
 
     @Override
-    public boolean delete(String path) { //TODO
-        return false;
+    public Result delete(String path) {
+        if (!isFinal) return new Result("Cannot delete files before the scan is complete");
+        if (!isSubpath(path)) return new Result("Path is illegal");
+        IFileAndFolder cur;
+        try {
+            cur = getFromPath(path);
+        } catch (Exception ignored) {
+            return new Result("Path is illegal");
+        }
+        if (!cur.delete()) return new Result("Failed to delete " + path);
+        return new Result((IRootFolder) null);
     }
 }

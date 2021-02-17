@@ -1,4 +1,4 @@
-package Logic.Concurrent.Objects;
+package Logic.Concurrent.Depricated.Objects;
 
 import Logic.Interfaces.IFile;
 import Logic.Interfaces.IFolder;
@@ -45,11 +45,11 @@ public class ConcurrentFile implements IFile {
     }
 
     @Override
-    public String delete() {
+    public boolean delete() {
         File file = new File(path);
-        if (!file.delete()) return path;
+        if (!file.delete()) return false;
         parent.getFiles().remove(path);
-        return "";
+        return true;
     }
 
 }

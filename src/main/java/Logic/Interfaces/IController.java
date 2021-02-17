@@ -11,5 +11,5 @@ public interface IController {
 
     boolean isFinal();
 
-    boolean delete(String path);
+    Result delete(String path);
 }

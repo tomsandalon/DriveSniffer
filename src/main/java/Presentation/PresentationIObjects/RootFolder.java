@@ -1,10 +1,7 @@
 package Presentation.PresentationIObjects;
 
-import Logic.Concurrent.Objects.ConcurrentRootFolder;
-import Logic.Interfaces.IFile;
 import Logic.Interfaces.IFileAndFolder;
 import Logic.Interfaces.IFolder;
-import Presentation.Result;
 
 import java.util.ArrayList;
 import java.util.List;

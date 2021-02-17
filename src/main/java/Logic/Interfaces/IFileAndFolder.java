@@ -6,5 +6,5 @@ public interface IFileAndFolder {
     long getSize();
     IFolder getParent();
     String getPath();
-    String delete();
+    boolean delete();
 }

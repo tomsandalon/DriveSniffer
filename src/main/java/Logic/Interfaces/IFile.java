@@ -19,5 +19,5 @@ public interface IFile extends IFileAndFolder {
     @Override
     String getPath();
 
-    String delete();
+    boolean delete();
 }

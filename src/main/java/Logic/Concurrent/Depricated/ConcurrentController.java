@@ -1,8 +1,8 @@
-package Logic.Concurrent;
+package Logic.Concurrent.Depricated;
 
-import Logic.Concurrent.Objects.ConcurrentFile;
-import Logic.Concurrent.Objects.ConcurrentFolder;
-import Logic.Concurrent.Objects.ConcurrentRootFolder;
+import Logic.Concurrent.Depricated.Objects.ConcurrentFile;
+import Logic.Concurrent.Depricated.Objects.ConcurrentFolder;
+import Logic.Concurrent.Depricated.Objects.ConcurrentRootFolder;
 import Logic.Interfaces.IController;
 import Logic.Interfaces.IFileAndFolder;
 import Logic.Interfaces.IFolder;
@@ -126,7 +126,7 @@ public class ConcurrentController implements IController {
     }
 
     @Override
-    public boolean delete(String path) { //TODO
-        return false;
+    public Result delete(String path) { //TODO
+        return null;
     }
 }

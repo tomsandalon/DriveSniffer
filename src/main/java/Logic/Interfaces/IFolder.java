@@ -15,7 +15,7 @@ public interface IFolder extends IFileAndFolder {
     String getPath();
 
     @Override
-    String delete();
+    boolean delete();
 
     @Override
     String getFullName();
