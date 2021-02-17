@@ -42,8 +42,7 @@ public class TwoThreadController implements IController {
                     File file = new File(current.getPath().concat(File.separator).concat(path));
                     if (!file.isDirectory()) {
                         toAdd = new TwoThreadFile(current, file.getAbsolutePath(), file.getName(), file.length());
-                    }
-                    else {
+                    } else {
                         toAdd = new TwoThreadFolder(file.getAbsolutePath(), (TwoThreadFolder) current, file.getName());
                         remaining.add((IFolder) toAdd);
                     }
@@ -56,13 +55,12 @@ public class TwoThreadController implements IController {
 
     @Override
     public Result scan() {
-        try{
+        try {
             Thread thread = new Thread(this::scanMission);
             Result ret = new Result(new RootFolder(result));
             thread.start();
             return ret;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return new Result(e.toString());
         }
     }
@@ -109,10 +107,9 @@ public class TwoThreadController implements IController {
 
     @Override
     public Result update() {
-        try{
+        try {
             return new Result(new RootFolder(current));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return new Result(e.toString());
         }
     }
@@ -133,10 +130,11 @@ public class TwoThreadController implements IController {
             return new Result("Path is illegal");
         }
         if (!cur.delete()) {
-            try{
+            try {
                 remaining.add((IFolder) cur);
                 scanMission();
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
             return new Result((IRootFolder) null);
         }
         return new Result("Failed to delete " + path);

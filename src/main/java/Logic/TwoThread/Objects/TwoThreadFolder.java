@@ -4,30 +4,28 @@ import Logic.Interfaces.IFileAndFolder;
 import Logic.Interfaces.IFolder;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class TwoThreadFolder implements IFolder {
 
     private final TwoThreadFolder parent;
     private final String path;
     private final Map<String, IFileAndFolder> files;
-    private final String shortName;
+    private final String name;
 
     public TwoThreadFolder(String path, TwoThreadFolder parent, String shortName) {
         this.path = path;
         this.files = new ConcurrentHashMap<>();
         this.parent = parent;
-        this.shortName = shortName;
+        this.name = shortName;
     }
 
     @Override
     public String getName() {
-        return shortName;
+        return name;
     }
 
     @Override
@@ -48,7 +46,7 @@ public class TwoThreadFolder implements IFolder {
     @Override
     public boolean delete() {
         Set<IFileAndFolder> filesClone = new HashSet<>(files.values());
-        for (IFileAndFolder file : filesClone){
+        for (IFileAndFolder file : filesClone) {
             if (!file.delete()) return false;
         }
         File file = new File(path);
