@@ -4,32 +4,32 @@ import Logic.Interfaces.IFileAndFolder;
 import Logic.Interfaces.IFolder;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class TwoThreadFolder implements IFolder {
 
-    private TwoThreadFolder parent;
-    private String path;
-    private AtomicLong size;
-    private Map<String, IFileAndFolder> files;
-    private String shortName;
+    private final TwoThreadFolder parent;
+    private final String path;
+    private final Map<String, IFileAndFolder> files;
+    private final String name;
+    private long size;
+    private boolean sizeIsFinal;
 
     public TwoThreadFolder(String path, TwoThreadFolder parent, String shortName) {
         this.path = path;
-        this.size = new AtomicLong(0);
-        this.files = new HashMap<>();
+        this.files = new ConcurrentHashMap<>();
         this.parent = parent;
-        this.shortName = shortName;
+        this.name = shortName;
+        size = 0;
+        sizeIsFinal = false;
     }
 
     @Override
     public String getName() {
-        return shortName;
+        return name;
     }
 
     @Override
@@ -50,22 +50,35 @@ public class TwoThreadFolder implements IFolder {
     @Override
     public boolean delete() {
         Set<IFileAndFolder> filesClone = new HashSet<>(files.values());
-        for (IFileAndFolder file : filesClone){
+        for (IFileAndFolder file : filesClone) {
             if (!file.delete()) return false;
         }
         File file = new File(path);
         if (!file.delete()) return false;
-        parent.getFiles().remove(path);
+        if (parent != null) {
+            parent.getFiles().remove(path);
+            parent.setSizeIsFinal(false);
+        }
         return true;
     }
 
     @Override
     public long getSize() {
+        if (sizeIsFinal) return size;
         return files.values().stream().mapToLong(IFileAndFolder::getSize).sum();
     }
 
     @Override
     public void addFile(IFileAndFolder file) {
         files.put(file.getPath(), file);
+    }
+
+    @Override
+    public void setSizeIsFinal(boolean sizeIsFinal) {
+        boolean prevState = this.sizeIsFinal;
+        this.sizeIsFinal = sizeIsFinal;
+        if (!sizeIsFinal || prevState) return;
+        for (IFileAndFolder subFolder : files.values())
+            if (subFolder instanceof IFolder) ((IFolder) subFolder).setSizeIsFinal(true);
     }
 }
