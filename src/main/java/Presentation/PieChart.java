@@ -1,5 +1,7 @@
 package Presentation;
 
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.text.AttributedString;
 import java.util.List;
 
@@ -43,7 +45,10 @@ public class PieChart {
         final ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new java.awt.Dimension(width, height));
         this.parent.add(chartPanel);
-        chartPanel.addChartMouseListener(new ClickSectionListener(this));
+        ClickSectionListener listener = new ClickSectionListener(this);
+        chartPanel.addChartMouseListener(listener);
+        chartPanel.addMouseListener(listener);
+        chartPanel.setPopupMenu(null); // disable
         isAdded = true;
     }
 
@@ -68,28 +73,72 @@ public class PieChart {
         return chart;
     }
 
+
     public void onSelectedSection(String name){
         this.reporter.onSelectedSection(name);
     }
+
+    public void onDelete(String name) {
+        int input = JOptionPane.showOptionDialog(this.parent, "Delete?", "", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+        if (input == 0) { // yes
+            this.reporter.onDelete(name);
+        }
+        // otherwise user pressed X button or selected No, thus do nothing
+    }
 }
-class ClickSectionListener implements ChartMouseListener{
+class ClickSectionListener implements ChartMouseListener, MouseListener {
     private PieChart chart;
+    private boolean isMouseRightClick;
 
     public ClickSectionListener(PieChart parent) {
         this.chart = parent;
+        this.isMouseRightClick = false;
     }
 
+    //mouseRelease always invoked before chartMouseClicked
     @Override
     public void chartMouseClicked(ChartMouseEvent event) {
         ChartEntity entity = event.getEntity();
         if(entity instanceof PieSectionEntity){
             PieSectionEntity section = (PieSectionEntity) entity;
-            this.chart.onSelectedSection((String) section.getSectionKey());
+            if (isMouseRightClick){
+                this.chart.onDelete((String) section.getSectionKey());
+                isMouseRightClick = false;
+            } else {
+                this.chart.onSelectedSection((String) section.getSectionKey());
+            }
         }
     }
 
     @Override
     public void chartMouseMoved(ChartMouseEvent chartMouseEvent) {}
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    //mouseRelease always invoked before chartMouseClicked
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if(e.isPopupTrigger())
+            this.isMouseRightClick = true;
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
 }
 
 class CustomLabelGenerator implements PieSectionLabelGenerator {

@@ -114,8 +114,8 @@ public class HomeWindow extends JFrame {
         chartReport.onBack();
     }
 
+
     public void onStartAnalyzing(){
-        System.out.println("here");
         String selectedPath = this.selectedFolder.getAbsolutePath();
         IController dirController = new TwoThreadController(selectedPath);
         //Logic.start
