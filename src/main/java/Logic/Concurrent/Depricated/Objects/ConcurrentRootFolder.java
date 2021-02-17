@@ -1,4 +1,4 @@
-package Logic.Concurrent.Objects;
+package Logic.Concurrent.Depricated.Objects;
 
 public class ConcurrentRootFolder extends ConcurrentFolder{
 

@@ -2,28 +2,23 @@ package Logic.Interfaces;
 
 import java.util.Map;
 
+/**
+ * Interface for folders
+ * @author tomsandalon
+ */
 public interface IFolder extends IFileAndFolder {
-    @Override
-    String getShortName();
 
+    /**
+     * Return the elements map of the folder.
+     * Path is Key.
+     * Subfolder/file is Value.
+     * @return The Key-Value mapping of the paths to the subfolder
+     */
     Map<String, IFileAndFolder> getFiles();
 
-    @Override
-    IFolder getParent();
-
-    @Override
-    String getPath();
-
-    @Override
-    String delete();
-
-    @Override
-    String getFullName();
-
-    @Override
-    long getSize();
-
-    void addToSize(long toAdd);
-
+    /**
+     * Add a file or folder to this folder's map
+     * @param file The file to add
+     */
     void addFile(IFileAndFolder file);
 }

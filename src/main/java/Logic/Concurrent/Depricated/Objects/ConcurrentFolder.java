@@ -1,4 +1,4 @@
-package Logic.Concurrent.Objects;
+package Logic.Concurrent.Depricated.Objects;
 
 import Logic.Interfaces.IFileAndFolder;
 import Logic.Interfaces.IFolder;
@@ -24,7 +24,7 @@ public class ConcurrentFolder implements IFolder {
     }
 
     @Override
-    public String getShortName() {
+    public String getName() {
         return shortName;
     }
 
@@ -44,24 +44,13 @@ public class ConcurrentFolder implements IFolder {
     }
 
     @Override
-    public String delete() { //TODO
-        return null;
-    }
-
-    @Override
-    public String getFullName() {
-        return shortName;
+    public boolean delete() { //TODO
+        return false;
     }
 
     @Override
     public long getSize() {
         return size.get();
-    }
-
-    @Override
-    public void addToSize(long size) {
-        this.size.addAndGet(size);
-        if (parent != null) this.parent.addToSize(size);
     }
 
     @Override

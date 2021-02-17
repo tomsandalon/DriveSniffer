@@ -1,8 +1,8 @@
-package Logic.Concurrent;
+package Logic.Concurrent.Depricated;
 
-import Logic.Concurrent.Objects.ConcurrentFile;
-import Logic.Concurrent.Objects.ConcurrentFolder;
-import Logic.Concurrent.Objects.ConcurrentRootFolder;
+import Logic.Concurrent.Depricated.Objects.ConcurrentFile;
+import Logic.Concurrent.Depricated.Objects.ConcurrentFolder;
+import Logic.Concurrent.Depricated.Objects.ConcurrentRootFolder;
 import Logic.Interfaces.IController;
 import Logic.Interfaces.IFileAndFolder;
 import Logic.Interfaces.IFolder;
@@ -41,7 +41,6 @@ public class ConcurrentController implements IController {
             File file = new File(job.getPath().concat(File.separator).concat(path));
             if (!file.isDirectory()) {
                 toAdd = new ConcurrentFile((ConcurrentFolder) job, file.getAbsolutePath(), file.getName(), file.length());
-                ((ConcurrentFolder) job).addToSize(toAdd.getSize());
             }
             else {
                 toAdd = new ConcurrentFolder(file.getAbsolutePath(), (ConcurrentFolder) job, file.getName());
@@ -101,8 +100,7 @@ public class ConcurrentController implements IController {
                 return new Result("Invalid path");
             }
         }
-        current = new ConcurrentRootFolder(cur.getPath(), (ConcurrentFolder) cur.getParent(), cur.getShortName());
-        current.addToSize(cur.getSize());
+        current = new ConcurrentRootFolder(cur.getPath(), (ConcurrentFolder) cur.getParent(), cur.getName());
         for (IFileAndFolder file : cur.getFiles().values()) {
             current.addFile(file);
         }
@@ -126,7 +124,12 @@ public class ConcurrentController implements IController {
     }
 
     @Override
-    public boolean delete(String path) { //TODO
-        return false;
+    public Result delete(String path) { //TODO
+        return null;
+    }
+
+    @Override
+    public Result getCurrentDir() {
+        return null;
     }
 }

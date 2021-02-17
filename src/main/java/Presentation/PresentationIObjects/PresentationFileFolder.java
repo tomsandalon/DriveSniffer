@@ -19,7 +19,7 @@ public class PresentationFileFolder implements IPresentationFileFolder {
 
     public PresentationFileFolder(IFileAndFolder file) {
         this.isFile = (file instanceof IFile);
-        this.name = file.getShortName();
+        this.name = file.getName();
         this.path = file.getPath();
         this.size = file.getSize();
     }
@@ -27,11 +27,6 @@ public class PresentationFileFolder implements IPresentationFileFolder {
     @Override
     public long getSize() {
         return size;
-    }
-
-    @Override
-    public void setSize(long size) {
-        this.size = size;
     }
 
     @Override
