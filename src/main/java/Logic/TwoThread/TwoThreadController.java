@@ -120,8 +120,7 @@ public class TwoThreadController implements IController {
         return isFinal;
     }
 
-    @Override
-    public Result delete(String path) {
+    private Result deleteHelper(String path) {
         if (!isFinal) return new Result("Cannot delete files before the scan is complete");
         if (!isSubpath(path)) return new Result("Path is illegal");
         IFileAndFolder cur;
@@ -139,6 +138,14 @@ public class TwoThreadController implements IController {
             return new Result((IRootFolder) null);
         }
         return new Result("Failed to delete " + path);
+    }
+
+    @Override
+    public Result delete(String path) {
+        isFinal = false;
+        Result ret = deleteHelper();
+        isFinal = true;
+        return ret;
     }
 
     @Override
