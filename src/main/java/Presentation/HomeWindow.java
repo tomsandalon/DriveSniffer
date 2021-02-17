@@ -15,40 +15,74 @@ import java.util.List;
 
 public class HomeWindow extends JFrame {
     public static String selectedPath = "D:\\OLD\\MARIK";
-    private static final int WINDOW_WIDTH = 1000;
-    private static final int WINDOW_HEIGH = 800;
     private final JFileChooser fileChooser;
     private File selectedFolder;
     private JComponent description; //TODO find bettere solution to hide description
     private JComponent analyzeBtn;
-    private IController dirController;
+    private PieChart chart;
+    private JPanel panelChart;
 
     public HomeWindow() {
         setTitle("Drive Sniffer");
-        setSize(WINDOW_WIDTH, WINDOW_HEIGH);
-
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        Dimension DimMax = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setSize(DimMax.width/2, (int)(DimMax.height*0.75));
         this.fileChooser = new JFileChooser();
-        fileChooser.setCurrentDirectory(new java.io.File(".")); // start at application current directory
+        fileChooser.setCurrentDirectory(new java.io.File(selectedPath)); // start at application current directory
+//        fileChooser.setCurrentDirectory(new java.io.File(".")); // start at application current directory
+
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     }
 
     public void configureWindow(){
-        this.setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
         Container container = this.getContentPane();
-
-        configureLOGO(container);
-
-        JButton button = new JButton("Select Folder/Drive");
-        JPanel panelBtn = new JPanel();
-        button.addActionListener(new SelectFolderListener(this.fileChooser, this));
-        panelBtn.add(button);
-        container.add(panelBtn);
-
+        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+//        configureLOGO(container);
+        JPanel toolBarPanel = new JPanel();
+        container.add(toolBarPanel);
+        toolBarPanel.setLayout(new BoxLayout(toolBarPanel, BoxLayout.X_AXIS));
+        configureBackButton(toolBarPanel);
+        configureSelectButton(toolBarPanel);
         configureDescription(container);
-
+        Dimension windowSizes = this.getSize();
+        configureChart(container, windowSizes.width, windowSizes.height);
+        configureAnalyzeButton(container, 2);
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationToCenter(this);
+    }
+
+    private void configureBackButton(Container container) {
+        JButton button = new JButton("Back");
+        this.analyzeBtn = button;
+        JPanel panelBtn = new JPanel();
+        button.addActionListener(new AnalyzeListener(this));
+        panelBtn.add(button);
+        container.add(panelBtn);
+    }
+
+    private void configureSelectButton(Container container){
+        JButton selectBtn = new JButton("Select Folder/Drive");
+        JPanel selectPanel = new JPanel();
+        selectBtn.addActionListener(new SelectFolderListener(this.fileChooser, this));
+        selectPanel.add(selectBtn);
+        container.add(selectPanel);
+    }
+
+    private void configureAnalyzeButton(Container container, int position) {
+        JButton button = new JButton("Analyze");
+        this.analyzeBtn = button;
+        JPanel panelBtn = new JPanel();
+        button.addActionListener(new AnalyzeListener(this));
+        panelBtn.add(button);
+        container.add(panelBtn, position);
+    }
+
+    private void configureChart(Container container, int width, int height) {
+        this.panelChart = new JPanel();
+        this.chart = new PieChart(panelChart, width, height);
+        container.add(panelChart);
+        this.panelChart.setVisible(false);
     }
 
     private void configureDescription(Container container) {
@@ -68,33 +102,29 @@ public class HomeWindow extends JFrame {
 
     public void onSelectedFolder(File dir){
         this.selectedFolder = dir;
-        JButton button = new JButton("Analyze");
-        this.analyzeBtn = button;
-        JPanel panelBtn = new JPanel();
-        button.addActionListener(new AnalyzeListener(this));
-        panelBtn.add(button);
-        this.getContentPane().add(panelBtn, 2);
+        this.analyzeBtn.setVisible(true);
         //update window
         setVisible(true);
     }
 
-    public void onStartAnalyzing(){
-        String selectedPath = this.selectedFolder.getAbsolutePath();
-//        String selectedPath = HomeWindow.selectedPath;
-        this.dirController = new TwoThreadController(selectedPath);
-        //Logic.start
-        Result result = this.dirController.scan();
+    public void onBack(){
 
+    }
+
+    public void onStartAnalyzing(){
+        System.out.println("here");
+        String selectedPath = this.selectedFolder.getAbsolutePath();
+        IController dirController = new TwoThreadController(selectedPath);
+        //Logic.start
+        Result result = dirController.scan();
         if(!result.isSuccess()){
-            //TODO Show Message
+            JOptionPane.showMessageDialog(this, result.getErrorMsg(), "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        JPanel panelChart = new JPanel();
-        PieChart chart = new PieChart(panelChart);
-        this.getContentPane().add(panelChart);
         this.description.setVisible(false);
-//        this.analyzeBtn.setVisible(false);
-        Runnable chartReport = ChartReporter.createChartReporter(chart, result.getResult(), this.dirController, selectedPath);
+        this.panelChart.setVisible(true);
+        this.analyzeBtn.setVisible(false);
+        Runnable chartReport = ChartReporter.createChartReporter(this.chart, result.getResult(), dirController, selectedPath, this);
         Thread chartReporter = new Thread(chartReport);
         chartReporter.start();
         setVisible(true);

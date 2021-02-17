@@ -5,6 +5,8 @@ import Presentation.PresentationIObjects.IPresentationFileFolder;
 import Presentation.PresentationIObjects.IRootFolder;
 import Presentation.Utils.Path;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.util.List;
 
@@ -13,17 +15,19 @@ class ChartReporter implements Runnable {
     private final PieChart chart;
     private final IController controller;
     private Path currentPath;
+    private Frame currentWindow;
 
-    public ChartReporter(PieChart chart, IRootFolder rootFolder, IController controller, String rootPath) {
+    public ChartReporter(PieChart chart, IRootFolder rootFolder, IController controller, String rootPath, Frame currentWindow) {
+        this.currentWindow = currentWindow;
         this.chart = chart;
         this.controller = controller;
         this.currentPath = new Path(rootPath);
-        this.chart.updateChart(rootFolder);
+        this.chart.makeChart(rootFolder);
         this.chart.initChart();
     }
 
-    public static Runnable createChartReporter(PieChart chart, IRootFolder result, IController dirController, String selectedPath) {
-        ChartReporter temp =  new ChartReporter(chart, result, dirController, selectedPath);
+    public static Runnable createChartReporter(PieChart chart, IRootFolder result, IController dirController, String selectedPath, Frame currentWindow) {
+        ChartReporter temp =  new ChartReporter(chart, result, dirController, selectedPath, currentWindow);
         chart.setReporter(temp);
         return temp;
     }
@@ -34,7 +38,7 @@ class ChartReporter implements Runnable {
             System.out.println("Success");
             this.chart.makeChart(resultDir.getResult());
         } else {
-            //TODO present message scan is not complited yet
+            JOptionPane.showMessageDialog(this.currentWindow, resultDir.getErrorMsg(), "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -45,7 +49,7 @@ class ChartReporter implements Runnable {
                 Thread.sleep(UPDATE_INTERVAL);
                 Result result = this.controller.update();
                 if (!result.isSuccess()) {
-                    //TODO Present Error message
+                    JOptionPane.showMessageDialog(this.currentWindow, result.getErrorMsg(), "Warning", JOptionPane.WARNING_MESSAGE);
                     System.out.print("I am dead");
                     return;
                 }

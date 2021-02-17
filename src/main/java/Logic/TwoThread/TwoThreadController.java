@@ -60,8 +60,9 @@ public class TwoThreadController implements IController {
     public Result scan() {
         try{
             Thread thread = new Thread(this::scanMission);
+            Result ret = new Result(new RootFolder(result));
             thread.start();
-            return new Result(new RootFolder(result));
+            return ret;
         }
         catch (Exception e) {
             return new Result(e.toString());

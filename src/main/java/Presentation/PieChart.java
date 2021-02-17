@@ -23,10 +23,12 @@ public class PieChart {
     private DefaultPieDataset result; // PieChartDataSet
     private JComponent parent;
     private ChartReporter reporter;
-    public PieChart(JComponent parent) {
-        this.width = 700;
-        this.height = 500;
+    private boolean isAdded;
+    public PieChart(JComponent parent, int width, int height) {
+        this.width = width;
+        this.height = height;
         this.parent = parent;
+        this.isAdded = false;
         this.result = new DefaultPieDataset();
     }
 
@@ -35,12 +37,14 @@ public class PieChart {
     }
 
     public void initChart(){
+        if (isAdded) return;
         final PieDataset dataset = result;
         final JFreeChart chart = createChart(dataset);
         final ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new java.awt.Dimension(width, height));
         this.parent.add(chartPanel);
         chartPanel.addChartMouseListener(new ClickSectionListener(this));
+        isAdded = true;
     }
 
     public void makeChart(IRootFolder rootFolder){
@@ -100,7 +104,7 @@ class CustomLabelGenerator implements PieSectionLabelGenerator {
     public String generateSectionLabel(final PieDataset dataset, final Comparable key) {
         String result = null;
         if (dataset != null) {
-            result = key.toString();
+            result = key.toString() + "," + dataset.getValue(key) + " Bytes";
         }
         return result;
     }
