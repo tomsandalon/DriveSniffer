@@ -42,15 +42,18 @@ class ChartReporter implements Runnable {
         }
     }
 
+
+
     public void onBack() {
         Result resultDir = this.controller.navigateTo(this.currentPath.goBack());
         if(resultDir.isSuccess()){
-            System.out.println("Success");
             this.chart.makeChart(resultDir.getResult());
         } else {
             JOptionPane.showMessageDialog(this.currentWindow, resultDir.getErrorMsg(), "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
+
+
 
     @Override
     public void run() {
@@ -60,7 +63,6 @@ class ChartReporter implements Runnable {
                 Result result = this.controller.update();
                 if (!result.isSuccess()) {
                     JOptionPane.showMessageDialog(this.currentWindow, result.getErrorMsg(), "Warning", JOptionPane.WARNING_MESSAGE);
-                    System.out.print("I am dead");
                     return;
                 }
                 IRootFolder rootFolder = result.getResult();
@@ -68,6 +70,24 @@ class ChartReporter implements Runnable {
             } while (!this.controller.isFinal());
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void onDelete(String name) {
+        Result result = this.controller.delete( this.currentPath.getCurrent() + File.separator + name);
+        if(result.isSuccess()){
+
+            try {
+                do {
+                    Thread.sleep(UPDATE_INTERVAL);
+                } while (!this.controller.isFinal());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            Result update = this.controller.update();
+            this.chart.makeChart(update.getResult());
+        } else {
+            JOptionPane.showMessageDialog(this.currentWindow, result.getErrorMsg(), "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
 }
