@@ -4,15 +4,9 @@ public class Main {
 
 
     public static void main(String[] args) throws InterruptedException {
-//        HomeWindow startPage = new HomeWindow();
-//        startPage.configureWindow();
+        HomeWindow startPage = new HomeWindow();
+        startPage.configureWindow();
 
-        String desc = "press me";
-        StringBuilder text = new StringBuilder(desc);
-        System.out.println(text.toString());
-        String left = "From left";
-        text = text.insert(0, left);
-        System.out.println(text.toString());
 //        JFrame frame = new JFrame();
 //        frame.setSize(1000,700);
 //        JButton button = new JButton("Hey");

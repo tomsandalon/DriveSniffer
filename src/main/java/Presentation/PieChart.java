@@ -2,6 +2,7 @@ package Presentation;
 
 import Presentation.PresentationIObjects.IPresentationFileFolder;
 import Presentation.PresentationIObjects.IRootFolder;
+import Presentation.Utils.SizePrinter;
 import org.jfree.chart.*;
 import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.entity.PieSectionEntity;
@@ -65,7 +66,7 @@ public class PieChart {
     }
 
     private JFreeChart createChart(final PieDataset dataset) {
-        final JFreeChart chart = ChartFactory.createPieChart("3D Pie Chart", dataset, false, true, false);
+        final JFreeChart chart = ChartFactory.createPieChart("", dataset, false, true, false);
         final PiePlot plot = (PiePlot) chart.getPlot();
         plot.setStartAngle(0);
         plot.setDirection(Rotation.CLOCKWISE);
@@ -155,7 +156,7 @@ class CustomLabelGenerator implements PieSectionLabelGenerator {
     public String generateSectionLabel(final PieDataset dataset, final Comparable key) {
         String result = null;
         if (dataset != null) {
-            result = key.toString() + "," + dataset.getValue(key) + " Bytes";
+            result = key.toString() + "\n" + SizePrinter.sizeToString(dataset.getValue(key));
         }
         return result;
     }

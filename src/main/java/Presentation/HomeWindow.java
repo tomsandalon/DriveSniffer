@@ -4,24 +4,29 @@ import Logic.Interfaces.IController;
 import Logic.TwoThread.TwoThreadController;
 import Presentation.Listeners.AnalyzeListener;
 import Presentation.Listeners.BackListener;
+import Presentation.Listeners.InfoListener;
 import Presentation.Listeners.SelectFolderListener;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 public class HomeWindow extends JFrame {
 //    public static String selectedPath = "D:\\OLD\\MARIK";
-    public static String infoMessage = "DriveSniffer analyzes a folder you select, presents its contents and allows you understand which files and folders take most of your precious storage.\n" +
+    private final static String mouseLeftClickIcon = new java.io.File("res").getAbsolutePath() + File.separator + "mouse_left_click_icon.png";
+    private final static String mouseRightClickIcon = new java.io.File("res").getAbsolutePath() + File.separator + "mouse_right_click_icon.png";
+    private final static String infoMessage = "DriveSniffer analyzes a folder you select, presents its contents and allows you understand which files and folders take most of your precious storage.\n" +
         "Usage:\n" +
         "- Select a folder to analyze.\n" +
         "- Press analyze to start the scan.\n" +
         "- Left click on the relevant slice to inspect that folder\n" +
         "- Right click on the relevant slice to delete that file or folder\n" +
         "- Back button to go back in path.\n";
+    private final static String infoIcon = new java.io.File("res").getAbsolutePath() + File.separator + "information_icon.png";
     private final JFileChooser fileChooser;
     private File selectedFolder;
     private JComponent analyzeBtn;
@@ -48,7 +53,6 @@ public class HomeWindow extends JFrame {
 
         configureToolBar(container);
 
-        configureInfoObjects(container, HomeWindow.infoMessage);
         Dimension windowSizes = this.getSize();
         configureChart(container, windowSizes.width, windowSizes.height);
         configureAnalyzeButton(container, 2);
@@ -62,6 +66,7 @@ public class HomeWindow extends JFrame {
         container.add(toolBarPanel);
         toolBarPanel.setLayout(new BoxLayout(toolBarPanel, BoxLayout.X_AXIS));
         configureBackButton(toolBarPanel);
+        configureInfoObjects(toolBarPanel);
         configureSelectButton(toolBarPanel);
     }
 
@@ -99,32 +104,46 @@ public class HomeWindow extends JFrame {
         this.panelChart.setVisible(false);
     }
 
-    private void configureInfoObjects(Container container, String message) {
-        JPanel toolBarPanel = new JPanel();
-        container.add(toolBarPanel);
-        toolBarPanel.setLayout(new BoxLayout(toolBarPanel, BoxLayout.X_AXIS));
-        String imagePath = "";
-        configureImageButton(toolBarPanel, imagePath, "Navigate to folder", "Left Mouse button for");
+    private void configureInfoObjects(Container container) {
+        configureImageButton(container, HomeWindow.mouseLeftClickIcon, "Navigate to folder", "Left Mouse button for", null);
 
-        JOptionPane.showMessageDialog(container, message, "Info", JOptionPane.INFORMATION_MESSAGE);
+        ActionListener infoListener = new InfoListener(this);
+        JPanel panelBtn = new JPanel();
+        try {
+            panelBtn.add(configureImageButton(HomeWindow.infoIcon, infoListener));
+            container.add(panelBtn);
+        } catch (IOException e) {
+            JButton button = new JButton("Info");
+            button.addActionListener(infoListener);
+            panelBtn.add(button);
+            container.add(panelBtn);
+        }
 
-        configureImageButton(toolBarPanel, imagePath, "Delete File or Folder", "Right Mouse button for");
+        configureImageButton(container, HomeWindow.mouseRightClickIcon, "Delete File or Folder", "Right Mouse button for", null);
     }
 
-    private void configureImageButton(Container container, String imagePath, String description, String leftOptionalDescription) {
+    private AbstractButton configureImageButton(String imagePath, ActionListener listener) throws IOException{
+        BufferedImage buttonIcon = ImageIO.read(new File(imagePath));
+        JButton button = new JButton(new ImageIcon(buttonIcon));
+        button.setBorder(BorderFactory.createEmptyBorder());
+        button.setContentAreaFilled(false);
+        if(listener != null) button.addActionListener(listener);
+        return button;
+    }
+
+    private void configureImageButton(Container container, String imagePath, String description, String leftOptionalDescription, ActionListener listener) {
         StringBuilder text = new StringBuilder(description);
+        JPanel panel = new JPanel();
         try {
-            BufferedImage buttonIcon = ImageIO.read(new File(imagePath));
-            JButton button = new JButton(new ImageIcon(buttonIcon));
-            button.setBorder(BorderFactory.createEmptyBorder());
-            button.setContentAreaFilled(false);
-            container.add(button);
+            AbstractButton button =  configureImageButton(imagePath, listener);
+            panel.add(button);
         } catch (IOException e) {
             text = text.insert(0, ' ');
             text = text.insert(0, leftOptionalDescription);
         }
         JLabel descriptionLabel = new JLabel(text.toString());
-        container.add(descriptionLabel);
+        panel.add(descriptionLabel);
+        container.add(panel);
     }
 
     private void configureLOGO(Container container) {
@@ -175,5 +194,9 @@ public class HomeWindow extends JFrame {
         // center by y
         int y = (bounds.height + insets.top - frame.getHeight()) / 2;
         frame.setLocation(x, y);
+    }
+
+    public void onClickInfo() {
+        JOptionPane.showMessageDialog(this, HomeWindow.infoMessage, "Info", JOptionPane.INFORMATION_MESSAGE);
     }
 }
