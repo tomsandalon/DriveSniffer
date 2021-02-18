@@ -50,7 +50,6 @@ public class HomeWindow extends JFrame {
         Container container = this.getContentPane();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
 //        configureLOGO(container);
-
         configureToolBar(container);
 
         Dimension windowSizes = this.getSize();
@@ -66,25 +65,34 @@ public class HomeWindow extends JFrame {
         container.add(toolBarPanel);
         toolBarPanel.setLayout(new BoxLayout(toolBarPanel, BoxLayout.X_AXIS));
         configureBackButton(toolBarPanel);
-        configureInfoObjects(toolBarPanel);
         configureSelectButton(toolBarPanel);
+        configureImageButton(toolBarPanel, HomeWindow.infoIcon, new InfoListener(this), "info");
+        configureImageButton(toolBarPanel, HomeWindow.mouseLeftClickIcon, "Navigate to folder", "Left Mouse button for", null);
+        configureImageButton(toolBarPanel, HomeWindow.mouseRightClickIcon, "Delete File or Folder", "Right Mouse button for", null);
+    }
+
+    private void configureImageButton(Container container, String imagePath, ActionListener listener, String title) {
+        try {
+            AbstractButton button =  configureImageButton(imagePath, listener);
+            container.add(button);
+        } catch (IOException e) {
+            configureButton(container, title, null);
+        }
     }
 
     private void configureBackButton(Container container) {
-        JButton button = new JButton("Back");
-        this.analyzeBtn = button;
-        JPanel panelBtn = new JPanel();
-        button.addActionListener(new BackListener(this));
-        panelBtn.add(button);
-        container.add(panelBtn);
+        configureButton(container, "Back", new BackListener(this));
+    }
+
+    private JButton configureButton(Container container, String title, ActionListener listener){
+        JButton button = new JButton(title);
+        if(listener != null) button.addActionListener(listener);
+        container.add(button);
+        return button;
     }
 
     private void configureSelectButton(Container container) {
-        JButton selectBtn = new JButton("Select Folder/Drive");
-        JPanel selectPanel = new JPanel();
-        selectBtn.addActionListener(new SelectFolderListener(this.fileChooser, this));
-        selectPanel.add(selectBtn);
-        container.add(selectPanel);
+        configureButton(container, "Select Folder/Drive", new SelectFolderListener(this.fileChooser, this));
     }
 
     private void configureAnalyzeButton(Container container, int position) {
@@ -104,24 +112,6 @@ public class HomeWindow extends JFrame {
         this.panelChart.setVisible(false);
     }
 
-    private void configureInfoObjects(Container container) {
-        configureImageButton(container, HomeWindow.mouseLeftClickIcon, "Navigate to folder", "Left Mouse button for", null);
-
-        ActionListener infoListener = new InfoListener(this);
-        JPanel panelBtn = new JPanel();
-        try {
-            panelBtn.add(configureImageButton(HomeWindow.infoIcon, infoListener));
-            container.add(panelBtn);
-        } catch (IOException e) {
-            JButton button = new JButton("Info");
-            button.addActionListener(infoListener);
-            panelBtn.add(button);
-            container.add(panelBtn);
-        }
-
-        configureImageButton(container, HomeWindow.mouseRightClickIcon, "Delete File or Folder", "Right Mouse button for", null);
-    }
-
     private AbstractButton configureImageButton(String imagePath, ActionListener listener) throws IOException{
         BufferedImage buttonIcon = ImageIO.read(new File(imagePath));
         JButton button = new JButton(new ImageIcon(buttonIcon));
@@ -133,17 +123,15 @@ public class HomeWindow extends JFrame {
 
     private void configureImageButton(Container container, String imagePath, String description, String leftOptionalDescription, ActionListener listener) {
         StringBuilder text = new StringBuilder(description);
-        JPanel panel = new JPanel();
         try {
             AbstractButton button =  configureImageButton(imagePath, listener);
-            panel.add(button);
+            container.add(button);
         } catch (IOException e) {
             text = text.insert(0, ' ');
             text = text.insert(0, leftOptionalDescription);
         }
         JLabel descriptionLabel = new JLabel(text.toString());
-        panel.add(descriptionLabel);
-        container.add(panel);
+        container.add(descriptionLabel);
     }
 
     private void configureLOGO(Container container) {
