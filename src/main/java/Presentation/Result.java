@@ -6,7 +6,7 @@ public class Result {
 
     private final boolean success;
 
-    private String errorMsg;
+    private String errorMsg = "";
 
     private IRootFolder result;
 
@@ -18,6 +18,14 @@ public class Result {
     public Result(String errorMsg) {
         this.errorMsg = errorMsg;
         this.success = false;
+    }
+
+    public Result(Result result, String errorMsg) {
+        this.success = false;
+        if (!result.isSuccess()) {
+            this.errorMsg = result.getErrorMsg().concat("\n");
+        }
+        this.errorMsg = this.errorMsg.concat(errorMsg);
     }
 
     public boolean isSuccess() {

@@ -23,7 +23,7 @@ public class TwoThreadFolder implements IFolder {
         this.files = new ConcurrentHashMap<>();
         this.parent = parent;
         this.name = shortName;
-        size = 0;
+        size = -1;
         sizeIsFinal = false;
     }
 
@@ -63,20 +63,26 @@ public class TwoThreadFolder implements IFolder {
     }
 
     @Override
-    public long getSize() {
-        if (sizeIsFinal) return size;
-        return files.values().stream().mapToLong(IFileAndFolder::getSize).sum();
+    public void addFile(IFileAndFolder file) {
+        files.put(file.getPath(), file);
+    }
+
+    private void calculateSize() {
+        this.size = files.values().stream().mapToLong(IFileAndFolder::getSize).sum();
     }
 
     @Override
-    public void addFile(IFileAndFolder file) {
-        files.put(file.getPath(), file);
+    public long getSize() {
+        if (sizeIsFinal) return this.size;
+        else calculateSize();
+        return this.size;
     }
 
     @Override
     public void setSizeIsFinal(boolean sizeIsFinal) {
         boolean prevState = this.sizeIsFinal;
         this.sizeIsFinal = sizeIsFinal;
+        calculateSize();
         if (!sizeIsFinal || prevState) return;
         for (IFileAndFolder subFolder : files.values())
             if (subFolder instanceof IFolder) ((IFolder) subFolder).setSizeIsFinal(true);

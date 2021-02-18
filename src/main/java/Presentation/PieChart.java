@@ -1,10 +1,5 @@
 package Presentation;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.text.AttributedString;
-import java.util.List;
-
 import Presentation.PresentationIObjects.IPresentationFileFolder;
 import Presentation.PresentationIObjects.IRootFolder;
 import org.jfree.chart.*;
@@ -17,15 +12,20 @@ import org.jfree.data.general.PieDataset;
 import org.jfree.util.Rotation;
 
 import javax.swing.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.text.AttributedString;
+import java.util.List;
 
 
 public class PieChart {
-    private int width;
-    private int height;
-    private DefaultPieDataset result; // PieChartDataSet
-    private JComponent parent;
+    private final int width;
+    private final int height;
+    private final DefaultPieDataset result; // PieChartDataSet
+    private final JComponent parent;
     private ChartReporter reporter;
     private boolean isAdded;
+
     public PieChart(JComponent parent, int width, int height) {
         this.width = width;
         this.height = height;
@@ -38,7 +38,7 @@ public class PieChart {
         this.reporter = reporter;
     }
 
-    public void initChart(){
+    public void initChart() {
         if (isAdded) return;
         final PieDataset dataset = result;
         final JFreeChart chart = createChart(dataset);
@@ -52,12 +52,12 @@ public class PieChart {
         isAdded = true;
     }
 
-    public void makeChart(IRootFolder rootFolder){
+    public void makeChart(IRootFolder rootFolder) {
         result.clear();
         updateChart(rootFolder);
     }
 
-    public void updateChart(IRootFolder rootFolder){
+    public void updateChart(IRootFolder rootFolder) {
         List<IPresentationFileFolder> subElements = rootFolder.getSubElements();
         for (IPresentationFileFolder element : subElements) {
             result.setValue(element.getName(), element.getSize());
@@ -74,7 +74,7 @@ public class PieChart {
     }
 
 
-    public void onSelectedSection(String name){
+    public void onSelectedSection(String name) {
         this.reporter.onSelectedSection(name);
     }
 
@@ -86,8 +86,9 @@ public class PieChart {
         // otherwise user pressed X button or selected No, thus do nothing
     }
 }
+
 class ClickSectionListener implements ChartMouseListener, MouseListener {
-    private PieChart chart;
+    private final PieChart chart;
     private boolean isMouseRightClick;
 
     public ClickSectionListener(PieChart parent) {
@@ -99,9 +100,9 @@ class ClickSectionListener implements ChartMouseListener, MouseListener {
     @Override
     public void chartMouseClicked(ChartMouseEvent event) {
         ChartEntity entity = event.getEntity();
-        if(entity instanceof PieSectionEntity){
+        if (entity instanceof PieSectionEntity) {
             PieSectionEntity section = (PieSectionEntity) entity;
-            if (isMouseRightClick){
+            if (isMouseRightClick) {
                 this.chart.onDelete((String) section.getSectionKey());
                 isMouseRightClick = false;
             } else {
@@ -111,7 +112,8 @@ class ClickSectionListener implements ChartMouseListener, MouseListener {
     }
 
     @Override
-    public void chartMouseMoved(ChartMouseEvent chartMouseEvent) {}
+    public void chartMouseMoved(ChartMouseEvent chartMouseEvent) {
+    }
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -126,7 +128,7 @@ class ClickSectionListener implements ChartMouseListener, MouseListener {
     //mouseRelease always invoked before chartMouseClicked
     @Override
     public void mouseReleased(MouseEvent e) {
-        if(e.isPopupTrigger())
+        if (e.isPopupTrigger())
             this.isMouseRightClick = true;
     }
 

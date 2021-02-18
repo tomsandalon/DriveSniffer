@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 
 public class AnalyzeListener implements ActionListener {
 
-    private HomeWindow parent;
+    private final HomeWindow parent;
 
     public AnalyzeListener(HomeWindow parent) {
         this.parent = parent;

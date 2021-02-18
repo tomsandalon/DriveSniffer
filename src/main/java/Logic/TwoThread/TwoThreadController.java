@@ -99,10 +99,7 @@ public class TwoThreadController implements IController {
         } catch (Exception e) {
             return new Result(e.toString());
         }
-        current = new TwoThreadFolder(cur.getPath(), (TwoThreadFolder) cur.getParent(), cur.getName());
-        for (IFileAndFolder file : cur.getFiles().values()) {
-            current.addFile(file);
-        }
+        current = cur;
         return new Result(new RootFolder(current));
     }
 
@@ -121,35 +118,34 @@ public class TwoThreadController implements IController {
     }
 
     private Result deleteHelper(String path) {
-        if (!isFinal) return new Result("Cannot delete files before the scan is complete");
-        if (!isSubpath(path)) return new Result("Path is illegal");
         IFileAndFolder cur;
+        Result result;
         try {
             cur = getFromPath(path);
         } catch (Exception ignored) {
             return new Result("Path is illegal");
         }
-        if (!cur.delete()) {
-            try {
+        if (cur.delete()) {
+            if (cur instanceof IFolder)
                 remaining.add((IFolder) cur);
-                scanMission();
-            } catch (Exception ignored) {
-            }
-            return new Result((IRootFolder) null);
+            result = new Result((IRootFolder) null);
+        } else result = new Result("Failed to delete " + path);
+        try {
+            scanMission();
+        } catch (Exception ignored) {
+            result = new Result(result, "Failed to rescan");
         }
-        return new Result("Failed to delete " + path);
+        return result;
     }
 
     @Override
     public Result delete(String path) {
+        if (!isFinal) return new Result("Cannot delete files before the scan is complete");
+        if (!isSubpath(path)) return new Result("Path is illegal");
         isFinal = false;
-        Result ret = deleteHelper();
+        Result ret = deleteHelper(path);
         isFinal = true;
         return ret;
     }
 
-    @Override
-    public Result getCurrentDir() {
-        return new Result(new RootFolder(current));
-    }
 }

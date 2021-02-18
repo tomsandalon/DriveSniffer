@@ -7,7 +7,7 @@ import java.awt.event.ActionListener;
 
 public class BackListener implements ActionListener {
 
-    private HomeWindow parent;
+    private final HomeWindow parent;
 
     public BackListener(HomeWindow parent) {
         this.parent = parent;

@@ -19,7 +19,6 @@ public interface IController {
      * Set and return the folder
      *
      * @param path The path to the folder
-     *
      * @return a result containing the requested folder, or an error if the path provided is invalid or is a file
      */
     Result navigateTo(String path); //assuming path is a subpath of the one given at construction
@@ -42,15 +41,8 @@ public interface IController {
      * Delete the file/folder in the path
      *
      * @param path The path of the file/folder to delete
-     *
      * @return A result which indicates whether the delete was successful, or an error.
      */
     Result delete(String path);
 
-    /**
-     * Return the current directory of the scanner
-     *
-     * @return The current directory
-     */
-    Result getCurrentDir();
 }

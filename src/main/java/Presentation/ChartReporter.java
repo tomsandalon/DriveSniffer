@@ -1,21 +1,19 @@
 package Presentation;
 
 import Logic.Interfaces.IController;
-import Presentation.PresentationIObjects.IPresentationFileFolder;
 import Presentation.PresentationIObjects.IRootFolder;
 import Presentation.Utils.Path;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.util.List;
 
 class ChartReporter implements Runnable {
     private static final long UPDATE_INTERVAL = 500;
     private final PieChart chart;
     private final IController controller;
-    private Path currentPath;
-    private Frame currentWindow;
+    private final Path currentPath;
+    private final Frame currentWindow;
 
     public ChartReporter(PieChart chart, IRootFolder rootFolder, IController controller, String rootPath, Frame currentWindow) {
         this.currentWindow = currentWindow;
@@ -27,14 +25,15 @@ class ChartReporter implements Runnable {
     }
 
     public static ChartReporter createChartReporter(PieChart chart, IRootFolder result, IController dirController, String selectedPath, Frame currentWindow) {
-        ChartReporter temp =  new ChartReporter(chart, result, dirController, selectedPath, currentWindow);
+        ChartReporter temp = new ChartReporter(chart, result, dirController, selectedPath, currentWindow);
         chart.setReporter(temp);
         return temp;
     }
 
-    public void onSelectedSection(String name){
-        Result resultDir = this.controller.navigateTo(this.currentPath.navigate(name));
-        if(resultDir.isSuccess()){
+    public void onSelectedSection(String name) {
+        Result resultDir = this.controller.navigateTo(this.currentPath.getCurrent() + File.separator + name);
+        if (resultDir.isSuccess()) {
+            this.currentPath.navigate(name);
             System.out.println("Success");
             this.chart.makeChart(resultDir.getResult());
         } else {
@@ -43,16 +42,14 @@ class ChartReporter implements Runnable {
     }
 
 
-
     public void onBack() {
         Result resultDir = this.controller.navigateTo(this.currentPath.goBack());
-        if(resultDir.isSuccess()){
+        if (resultDir.isSuccess()) {
             this.chart.makeChart(resultDir.getResult());
         } else {
             JOptionPane.showMessageDialog(this.currentWindow, resultDir.getErrorMsg(), "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
-
 
 
     @Override
@@ -68,21 +65,18 @@ class ChartReporter implements Runnable {
                 IRootFolder rootFolder = result.getResult();
                 this.chart.updateChart(rootFolder);
             } while (!this.controller.isFinal());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (InterruptedException ignored) {
         }
     }
 
     public void onDelete(String name) {
-        Result result = this.controller.delete( this.currentPath.getCurrent() + File.separator + name);
-        if(result.isSuccess()){
-
+        Result result = this.controller.delete(this.currentPath.getCurrent() + File.separator + name);
+        if (result.isSuccess()) {
             try {
                 do {
                     Thread.sleep(UPDATE_INTERVAL);
                 } while (!this.controller.isFinal());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            } catch (InterruptedException ignored) {
             }
             Result update = this.controller.update();
             this.chart.makeChart(update.getResult());
